@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// An [ExpansionTile] with a [ExpandIcon] as it's child. Updates the state when expanded or closed.
 class BetterExpansionTile extends StatefulWidget {
   final Widget body;
   final Widget title;

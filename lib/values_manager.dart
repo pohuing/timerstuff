@@ -3,17 +3,18 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'better_expansion_tile.dart';
 
+/// Manages the locally stored values and optionally updates the animated list
 class ValuesManager extends Cubit<ValuesState> {
   final List<Value> values = [];
   GlobalKey<AnimatedListState>? listKey;
 
   ValuesManager() : super(const ValuesState([]));
 
+  /// Updates [values] with changes provided in the snapshot
   void onNewData(QuerySnapshot<Value> event) async {
     log("Got new data", name: runtimeType.toString());
     for (var change in event.docChanges) {
@@ -36,6 +37,7 @@ class ValuesManager extends Cubit<ValuesState> {
     emit(ValuesState(values.map((e) => e).toList()));
   }
 
+  /// Removes an item from [values] and animates the removal
   void rem(Value data) {
     final i = values.indexWhere((element) => element.ref == data.ref);
     log('Removing item $data at location $i', name: runtimeType.toString());
@@ -43,6 +45,7 @@ class ValuesManager extends Cubit<ValuesState> {
       i,
       (context, animation) => SlideTransition(
         position: Tween<Offset>(begin: const Offset(1, 0), end: const Offset(0, 0)).animate(animation),
+        // TODO refactor into widget
         child: BetterExpansionTile(
           key: Key(data.toString()),
           isExpanded: true,
@@ -57,6 +60,7 @@ class ValuesManager extends Cubit<ValuesState> {
     values.removeAt(i);
   }
 
+  /// Adds an item to [values]
   void ins(Value data) {
     final i = values.indexWhere((e) => e.value > data.value);
     final actualI = i < 0 ? values.length : i;
